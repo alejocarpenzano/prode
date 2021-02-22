@@ -1,0 +1,67 @@
+<aura:component implements="flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" 
+                access="global" 
+                controller="CompletarResultadosController">
+    <!-- ATTRIBUTES -->
+    <aura:attribute name="isLoading" type="Boolean" />
+    <aura:attribute name="showPanel" type="Boolean" />
+    <aura:attribute name="apostadores" type="List" />
+    <aura:attribute name="partidos" type="List" />
+    <aura:attribute name="predicciones" type="List" />
+    
+    <aura:attribute name="apostador" type="Object" />
+    <aura:attribute name="fecha" type="Object" />
+    <aura:attribute name="apostadorId" type="String" />
+    <aura:attribute name="editarPredicciones" type="Boolean" default="false"/>
+    
+    <!-- HANDLERS -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!-- MARKUP -->
+    <aura:if isTrue="{!v.isLoading}">
+        <aura:set attribute="else">
+            <lightning:select name="apostador" label="Seleccione Apostador" value="{!v.apostadorId}" required="true" onchange="{!c.handleChangeApostador}">
+                <option value="" label="BUSCATE"></option>
+                <aura:iteration items="{!v.apostadores}" var="apostador">
+                    <option value="{!apostador.Id}" label="{!apostador.Name}"></option>
+                </aura:iteration>
+            </lightning:select>
+            
+            <aura:if isTrue="{!v.showPanel}">
+                <lightning:card title="Fecha ">
+                    <table>
+                        <tr>
+                            <th>LOCAL</th>
+                            <th></th>
+                            <th></th>
+                            <th>VISITANTE</th>
+                        </tr>
+                        <aura:iteration items="{!v.partidos}" var="partido">
+                            <tr>
+                                <td>{!partido.Local__r.Name}</td>
+                                <td><lightning:input value="{!partido.Goles_Local__c}"/></td>
+                                <td><lightning:input value="{!partido.Goles_Visitante__c}"/></td>
+                                <td>{!partido.Visitante__r.Name}</td>
+                            </tr>
+                        </aura:iteration>
+                        <aura:if isTrue="{!v.editarPredicciones}">
+                            <aura:iteration items="{!v.predicciones}" var="prediccion">
+                                <tr>
+                                    <td>{!prediccion.Partido__r.Local__r.Name}</td>
+                                    <td><lightning:input value="{!prediccion.Goles_Local__c}"/></td>
+                                    <td><lightning:input value="{!prediccion.Goles_Visitante__c}"/></td>
+                                    <td>{!prediccion.Partido__r.Visitante__r.Name}</td>
+                                </tr>
+                            </aura:iteration>
+                        </aura:if>
+                    </table>
+                    <aura:set attribute="footer">
+                        <lightning:button label="Guardar" onclick="{!c.handleSave}" />
+                    </aura:set>
+                </lightning:card>
+            </aura:if>
+            
+        </aura:set>
+        <lightning:spinner />
+    </aura:if>
+    
+</aura:component>
